@@ -6,9 +6,7 @@ import (
 	"log"
 	"mime/multipart"
 	"net/http"
-	"time"
-
-	"github.com/go-rod/rod"
+	"net/http/cookiejar"
 )
 
 // Run starts the crawler
@@ -18,20 +16,14 @@ var (
 )
 
 func Run(friendid string) {
-	// reqUrl := "https://maimaidx-eng.com/maimai-mobile/friend/friendDetail/?idx="
-
-	// browser := openBrowser()
-	// defer browser.MustClose()
-
-	// page := browser.MustPage(reqUrl + friendid).MustWaitStable()
-
-	// page.MustScreenshot(fmt.Sprintf("./data/screenshot/%s.png", friendid))
 	getProfile(friendid)
-
 }
 
 func login() []*http.Cookie {
-	client := &http.Client{}
+	jar, _ := cookiejar.New(nil)
+	client := &http.Client{
+		Jar: jar,
+	}
 
 	var b bytes.Buffer
 	w := multipart.NewWriter(&b)
@@ -97,20 +89,4 @@ func getProfile(friendid string) {
 	}
 
 	fmt.Println(resq.Body)
-}
-
-func openBrowser() *rod.Browser {
-	var Browser *rod.Browser
-	defer func() {
-		if fatalError := recover(); fatalError != nil {
-			log.Println(fatalError)
-		}
-	}()
-	Browser = rod.New()
-	Browser = Browser.Timeout(30 * time.Hour)
-	err := Browser.Connect()
-	if err != nil {
-		return nil
-	}
-	return Browser
 }
