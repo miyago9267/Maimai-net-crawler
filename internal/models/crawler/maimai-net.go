@@ -1,10 +1,7 @@
 package crawler
 
 import (
-	"bytes"
-	"fmt"
 	"log"
-	"mime/multipart"
 	"net/http"
 	"net/http/cookiejar"
 )
@@ -15,78 +12,56 @@ var (
 	Password string
 )
 
-func Run(friendid string) {
-	getProfile(friendid)
+type crawlerClient struct {
+	client *http.Client
 }
 
-func login() []*http.Cookie {
+func NewCrawlerClient() *crawlerClient {
 	jar, _ := cookiejar.New(nil)
-	client := &http.Client{
-		Jar: jar,
+	return &crawlerClient{
+		client: &http.Client{
+			Jar: jar,
+		},
 	}
-
-	var b bytes.Buffer
-	w := multipart.NewWriter(&b)
-
-	// 添加 form 欄位
-	err := w.WriteField("username", "your_username")
-	if err != nil {
-		log.Fatalf("Error adding form field: %v", err)
-	}
-
-	err = w.WriteField("password", "your_password")
-	if err != nil {
-		log.Fatalf("Error adding form field: %v", err)
-	}
-
-	req, err := http.NewRequest("POST", "https://lng-tgk-aime-gw.am-all.net/common_auth/login/sid/", &b)
-	if err != nil {
-		panic(err)
-	}
-
-	resq, err := client.Do(req)
-	if err != nil {
-		panic(err)
-	}
-
-	defer resq.Body.Close()
-
-	if resq.StatusCode != http.StatusOK {
-		panic(fmt.Sprintf("login failed, %d", resq.StatusCode))
-	}
-
-	cookie := resq.Cookies()
-	for _, c := range cookie {
-		fmt.Println(c.Name, c.Value)
-	}
-
-	return cookie
-
 }
 
-func getProfile(friendid string) {
-	client := &http.Client{}
+func (c *crawlerClient) Get(url string) (*http.Response, error) {
+	return c.client.Get(url)
+}
 
-	req, err := http.NewRequest("GET", "https://maimaidx-eng.com/maimai-mobile/friend/friendDetail/?idx="+friendid, nil)
+// PostForm 發送POST請求
+func (c *crawlerClient) PostForm(url string, data map[string][]string) (*http.Response, error) {
+	return c.client.PostForm(url, data)
+}
+
+func Run(friendid string) {
+	// getProfile(friendid)
+}
+
+func login() crawlerClient {
+	cli := NewCrawlerClient()
+
+	resp, err := cli.PostForm("https://maimaidx-eng.com/maimai-mobile/login/loginProcess/", map[string][]string{
+		"sid":      {Sid},
+		"password": {Password},
+	})
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
-	cookie := login()
-	for _, c := range cookie {
-		req.AddCookie(c)
-	}
+	defer resp.Body.Close()
+	return *cli
+}
 
-	resq, err := client.Do(req)
+func getProfile(friendid string) http.Response {
+	cli := NewCrawlerClient()
+
+	resp, err := cli.Get("https://maimaidx-eng.com/maimai-mobile/friend/profile/?friendId=" + friendid)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
-	defer resq.Body.Close()
+	defer resp.Body.Close()
 
-	if resq.StatusCode != http.StatusOK {
-		panic(fmt.Sprintf("login failed, %d", resq.StatusCode))
-	}
-
-	fmt.Println(resq.Body)
+	return *resp
 }
