@@ -9,16 +9,16 @@ import (
 	"github.com/go-rod/rod/lib/defaults"
 )
 
-type Page struct {
-	query   string
-	browser *rod.Browser
-	page    *rod.Page
+type BrowserPage struct {
+	Query   string
+	Browser *rod.Browser
+	Page    *rod.Page
 }
 
-func NewPage(query string) *Page {
+func NewPage(query string) *BrowserPage {
 	browser := OpenBrowser()
 	page := browser.MustPage(query).MustWaitStable()
-	return &Page{query: query, browser: browser, page: page}
+	return &BrowserPage{Query: query, Browser: browser, Page: page}
 }
 
 func OpenBrowser() *rod.Browser {
@@ -40,10 +40,12 @@ func OpenBrowser() *rod.Browser {
 	return Browser
 }
 
-func (p *Page) Close() {
-	p.browser.Close()
+func (p *BrowserPage) ScrollToBottom() {
+	footer := p.Page.MustElement("dt")
+	footer.MustScrollIntoView()
+	// p.Page.MustEval(`window.scrollTo(0, document.body.scrollHeight)`)
 }
 
-func (p *Page) FuckYouNigga() {
-
+func (p *BrowserPage) Close() {
+	p.Browser.Close()
 }
