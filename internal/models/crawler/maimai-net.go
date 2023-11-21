@@ -12,12 +12,13 @@ import (
 var (
 	Sid      string
 	Password string
-	cli      = models.NewPage("https://maimaidx-eng.com/")
+	cli      models.BrowserPage
 )
 
 func Run(friendid string, sid string, password string) []byte {
 	Sid = sid
 	Password = password
+	cli = *models.NewPage("https://maimaidx-eng.com/")
 	save, err := getProfile(friendid)
 
 	if err != nil {
