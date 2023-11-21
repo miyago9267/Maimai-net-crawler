@@ -63,8 +63,10 @@ func newMessage(discord *discordgo.Session, message *discordgo.MessageCreate) {
 
 		id := args[1]
 		// log.Println(id)
-		pic := crawler.Run(id, SID, Password)
-		reader := bytes.NewReader(pic)
-		discord.ChannelFileSendWithMessage(message.ChannelID, "", "maimai.png", reader)
+		go func() {
+			pic := crawler.Run(id, SID, Password)
+			reader := bytes.NewReader(pic)
+			discord.ChannelFileSendWithMessage(message.ChannelID, "", "maimai.png", reader)
+		}()
 	}
 }
