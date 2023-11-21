@@ -1,67 +1,54 @@
 package crawler
 
 import (
+	models "discordbot/internal/models/browser"
 	"log"
-	"net/http"
-	"net/http/cookiejar"
+	"time"
+
+	"github.com/go-rod/rod/lib/proto"
 )
 
 // Run starts the crawler
 var (
 	Sid      string
 	Password string
+	cli      = models.NewPage("https://maimaidx-eng.com/")
 )
 
-type crawlerClient struct {
-	client *http.Client
-}
+func Run(friendid string, sid string, password string) []byte {
+	Sid = sid
+	Password = password
+	save, err := getProfile(friendid)
 
-func NewCrawlerClient() *crawlerClient {
-	jar, _ := cookiejar.New(nil)
-	return &crawlerClient{
-		client: &http.Client{
-			Jar: jar,
-		},
-	}
-}
-
-func (c *crawlerClient) Get(url string) (*http.Response, error) {
-	return c.client.Get(url)
-}
-
-// PostForm 發送POST請求
-func (c *crawlerClient) PostForm(url string, data map[string][]string) (*http.Response, error) {
-	return c.client.PostForm(url, data)
-}
-
-func Run(friendid string) {
-	// getProfile(friendid)
-}
-
-func login() crawlerClient {
-	cli := NewCrawlerClient()
-
-	resp, err := cli.PostForm("https://maimaidx-eng.com/maimai-mobile/login/loginProcess/", map[string][]string{
-		"sid":      {Sid},
-		"password": {Password},
-	})
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("error: %s", err.Error())
 	}
 
-	defer resp.Body.Close()
-	return *cli
+	return save
 }
 
-func getProfile(friendid string) http.Response {
-	cli := NewCrawlerClient()
+func login() {
+	cli.Page.MustElement("dt").MustClick().MustWaitStable()
 
-	resp, err := cli.Get("https://maimaidx-eng.com/maimai-mobile/friend/profile/?friendId=" + friendid)
+	cli.Page.MustElement("input[name='sid']").MustInput(Sid)
+	cli.Page.MustElement("input[name='password']").MustInput(Password)
+	err := cli.Page.MustElement("input[type='submit']").Click(proto.InputMouseButtonLeft, 1)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("click login button error: %s", err.Error())
+	} else {
+		cli.Page.WaitLoad()
+		time.Sleep(time.Second * 5)
 	}
+}
 
-	defer resp.Body.Close()
+func getProfile(friendid string) ([]byte, error) {
+	defer cli.Close()
+	login()
+	cli.Page.MustNavigate(`https://maimaidx-eng.com/maimai-mobile/friend/search/searchUser/?friendCode=` + friendid).MustWaitStable()
 
-	return *resp
+	// time.Sleep(time.Second * 5)
+	targetDiv := cli.Page.MustElement("body > div.wrapper.main_wrapper.t_c > div.see_through_block.m_15.m_t_5.p_10.t_l.f_0.p_r > div.basic_block.p_10.f_0")
+	_ = targetDiv.MustScreenshot("data/" + friendid + ".png")
+	// _ = targetDiv.MustScreenshot()
+	return []byte(targetDiv.MustScreenshot()), nil
 }
