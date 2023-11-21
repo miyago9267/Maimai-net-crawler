@@ -1,21 +1,22 @@
 package main
 
 import (
-	"fmt"
-	"os"
-
 	"discordbot/internal/models/bot"
-	"discordbot/internal/models/crawler"
+	"log"
+	"os"
 
 	_ "github.com/joho/godotenv/autoload"
 )
 
 func main() {
-	fmt.Println("Hello, World!")
+	log.Println("Server started")
+	sid := os.Getenv("SEGA_ID")
+	pwd := os.Getenv("SEGA_PW")
 	botToken := os.Getenv("DISCORD_TOKEN")
 
-	// Start the bot
+	// // Start the bot
 	bot.BotToken = botToken
-	crawler.Run("8058430092794")
-	bot.Run()
+	// crawler.Run("8058430092794", sid, pwd)
+	bot.Run(sid, pwd)
+	// crawler.Run("8058430092794", sid, pwd)
 }
