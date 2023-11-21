@@ -1,5 +1,5 @@
 # Maimai Net Crawler Discord Bot
-English | [繁體中文](readme_cn.md)
+English | [繁體中文](docs/readme_cn.md)
 
 ## Description
 Discord bot power by golang, which can crawl maimai net data and send to discord channel.

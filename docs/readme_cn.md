@@ -1,4 +1,5 @@
 # Maimai-Net Discord 爬蟲機器人
+[English](readme.md) | 繁體中文
 
 ## 簡介
 本機器人提供 Discord 用戶查詢 maimai net 資料，並將資料發送到 Discord 頻道。
