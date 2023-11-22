@@ -16,7 +16,10 @@ func main() {
 
 	// // Start the bot
 	bot.BotToken = botToken
-	// crawler.Run("8058430092794", sid, pwd)
 	bot.Run(sid, pwd)
-	// crawler.Run("8058430092794", sid, pwd)
+
+	// for {
+	// 	input := []byte("friendid")
+	// 	crawler.Run(string(input), sid, pwd)
+	// }
 }
