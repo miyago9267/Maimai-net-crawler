@@ -1,25 +1,31 @@
 package main
 
 import (
-	"discordbot/internal/models/bot"
+	"bufio"
 	"log"
+	"maimainet-crawler/internal/crawler"
 	"os"
+
+	"maimainet-crawler/config"
 
 	_ "github.com/joho/godotenv/autoload"
 )
 
 func main() {
-	log.Println("Server started")
-	sid := os.Getenv("SEGA_ID")
-	pwd := os.Getenv("SEGA_PW")
-	botToken := os.Getenv("DISCORD_TOKEN")
+	config.InitConfig()
+
+	sid := config.Cfg.SEGA_ID
+	pwd := config.Cfg.SEGA_PW
 
 	// // Start the bot
-	bot.BotToken = botToken
-	bot.Run(sid, pwd)
 
-	// for {
-	// 	input := []byte("friendid")
-	// 	crawler.Run(string(input), sid, pwd)
-	// }
+	id := bufio.NewReader(os.Stdin)
+
+	input, err := id.ReadString('\n')
+	if err != nil {
+		log.Fatalf("Failed to read input: %v", err)
+	}
+
+	crawler.Run(input, sid, pwd)
+
 }

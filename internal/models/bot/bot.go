@@ -2,9 +2,9 @@ package bot
 
 import (
 	"bytes"
-	"discordbot/internal/models/crawler"
 	"fmt"
 	"log"
+	"maimainet-crawler/internal/crawler"
 	"os"
 	"os/signal"
 	"strings"

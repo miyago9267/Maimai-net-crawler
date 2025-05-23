@@ -1,8 +1,8 @@
 package crawler
 
 import (
-	models "discordbot/internal/models/browser"
 	"log"
+	models "maimainet-crawler/internal/models/browser"
 	"time"
 
 	"github.com/go-rod/rod/lib/proto"
@@ -45,7 +45,7 @@ func login() {
 func getProfile(friendid string) ([]byte, error) {
 	defer cli.Close()
 	login()
-  cli.Page.MustScreenshot("data/login.png")
+	cli.Page.MustScreenshot("data/login.png")
 	cli.Page.MustNavigate(`https://maimaidx-eng.com/maimai-mobile/friend/search/searchUser/?friendCode=` + friendid).MustWaitStable()
 
 	// time.Sleep(time.Second * 5)
