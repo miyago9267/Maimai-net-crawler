@@ -1,14 +1,19 @@
-# Maimai Net Crawler Discord Bot
+# Maimai Net Crawler
+
 English | [繁體中文](docs/readme_cn.md)
 
 ## Description
-Discord bot power by golang, which can crawl maimai net data and send to discord channel.
 
-## Deploy
-1. Download binary file from [release]()
-2. Create `.env` file in same directory with binary file.
-3. Modify your `.env` file, see [example](.env.example)
-4. Run binary file.
+Maimai Net Screanshot Crawler.
+
+WIP
 
 ## Usage
-1. Send `&maimai <friendID>` to discord channel, bot will send maimai net data to channel.
+
+```shell
+go run ./cmd/maimai-net
+```
+
+## TODO
+
+- [ ] Send friend request for data analysis
